@@ -8,6 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCharacterDeathSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCharacterHitSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCharacterHealthChangedSignature, int32, CurrentHitPoints, int32, MaxHitPoints);
 
 /**
  * Characters are Pawns that have a mesh, collision, and built-in movement logic.
@@ -33,15 +34,39 @@ public:
 
 	// Public getter to check the death state
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Parrot|Character|State")
-	bool IsDead() { return CurrentHitPoints <= 0; }
+	bool IsDead() const { return CurrentHitPoints <= 0; }
 
-	// Applies a hit to this character 
+	// Returns the character's current health value.
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Parrot|Character|Stats")
+	int32 GetCurrentHitPoints() const { return CurrentHitPoints; }
+
+	// Returns the character's maximum health value.
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Parrot|Character|Stats")
+	int32 GetMaxHitPoints() const { return HitPoints; }
+
+	// Returns current health divided by max health for progress bars.
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Parrot|Character|Stats")
+	float GetHealthPercent() const { return HitPoints > 0 ? static_cast<float>(CurrentHitPoints) / static_cast<float>(HitPoints) : 0.0f; }
+
+	// Applies a default damage hit to this character.
 	UFUNCTION(BlueprintCallable, Category = "Parrot|Character|Combat")
 	virtual void HitCharacter();
 
-	// Applies a hit with force to the character based on impact 
+	// Applies a default damage hit with force to the character based on impact.
 	UFUNCTION(BlueprintCallable, Category = "Parrot|Character|Combat")
 	virtual void HitCharacterWithLaunchForce(const FVector& Force); 
+
+	// Applies a specific amount of damage to this character.
+	UFUNCTION(BlueprintCallable, Category = "Parrot|Character|Combat")
+	virtual void ApplyDamageToCharacter(UPARAM(meta = (ClampMin = "0")) int32 DamageAmount);
+
+	// Applies a specific amount of damage with force to the character based on impact.
+	UFUNCTION(BlueprintCallable, Category = "Parrot|Character|Combat")
+	virtual void ApplyDamageWithLaunchForce(UPARAM(meta = (ClampMin = "0")) int32 DamageAmount, const FVector& Force);
+
+	// Restores a specific amount of health without exceeding max health.
+	UFUNCTION(BlueprintCallable, Category = "Parrot|Character|Combat")
+	virtual void HealCharacter(UPARAM(meta = (ClampMin = "0")) int32 HealAmount);
 
 	// Instantly kills this character regardless of current hit point count.
 	UFUNCTION(BlueprintCallable, Category = "Parrot|Character|State")
@@ -60,6 +85,10 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Parrot|Character|Combat")
 	FCharacterHitSignature CharacterHitDelegate; 
 
+	// Delegate that is fired whenever current health changes.
+	UPROPERTY(BlueprintAssignable, Category = "Parrot|Character|Stats")
+	FCharacterHealthChangedSignature CharacterHealthChangedDelegate;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -68,11 +97,15 @@ protected:
 	// Character stats
 	// ************
 	 
-	// This is the authored value of hit points this character will have.
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (ClampMin = "0", ClampMax = "10", UIMin = "0", UIMax = "10", Category = "Parrot|Character|Stats"))
-	int32 HitPoints = 1;
+	// This is the authored maximum health value this character will have.
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Parrot|Character|Stats", meta = (ClampMin = "1", UIMin = "1", UIMax = "1000"))
+	int32 HitPoints = 100;
 
-	// This is the working hit point count that is updated when attacked.
+	// This is the default damage amount used by legacy hit calls.
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Parrot|Character|Stats", meta = (ClampMin = "0", UIMin = "0", UIMax = "1000"))
+	int32 DefaultHitDamage = 10;
+
+	// This is the working health value that is updated when attacked or healed.
 	UPROPERTY(BlueprintReadWrite, Category = "Parrot|Character|Stats")
 	int32 CurrentHitPoints = 0;
 

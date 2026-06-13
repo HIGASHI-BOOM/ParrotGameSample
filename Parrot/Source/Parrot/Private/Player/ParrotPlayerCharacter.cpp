@@ -53,7 +53,7 @@ void AParrotPlayerCharacter::CheckJumpInput(float DeltaTime)
 bool AParrotPlayerCharacter::CanJumpInternal_Implementation() const
 {
 	// Can't jump while dead 
-	if (CurrentHitPoints <= 0)
+	if (IsDead())
 	{
 		return false; 
 	}
@@ -160,6 +160,16 @@ void AParrotPlayerCharacter::HitCharacter()
 	}
 
 	Super::HitCharacter(); 
+}
+
+void AParrotPlayerCharacter::ApplyDamageToCharacter(int32 DamageAmount)
+{
+	if (bHitInvulnerable)
+	{
+		return;
+	}
+
+	Super::ApplyDamageToCharacter(DamageAmount);
 
 	// If the character has died after a hit, we don't want to apply an timers
 	if (IsDead())
@@ -212,6 +222,16 @@ void AParrotPlayerCharacter::HitCharacterWithLaunchForce(const FVector& Force)
 	Super::HitCharacterWithLaunchForce(Force); 
 }
 
+void AParrotPlayerCharacter::ApplyDamageWithLaunchForce(int32 DamageAmount, const FVector& Force)
+{
+	if (bHitInvulnerable)
+	{
+		return;
+	}
+
+	Super::ApplyDamageWithLaunchForce(DamageAmount, Force);
+}
+
 void AParrotPlayerCharacter::CharacterDeath()
 {
 	// First disable the player's input on the controller
@@ -249,7 +269,7 @@ void AParrotPlayerCharacter::CharacterDeath()
 
 void AParrotPlayerCharacter::AddHitpoints(int32 PointsToAdd)
 {
-	CurrentHitPoints += PointsToAdd;
+	HealCharacter(PointsToAdd);
 	OnHitpointsAdded.Broadcast(); 
 }
 

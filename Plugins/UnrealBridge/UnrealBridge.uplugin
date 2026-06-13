@@ -39,7 +39,11 @@
 			"Enabled": true
 		},
 		{
-			"Name": "StructUtils",
+			"Name": "GeometryScripting",
+			"Enabled": true
+		},
+		{
+			"Name": "PCG",
 			"Enabled": true
 		}
 	]

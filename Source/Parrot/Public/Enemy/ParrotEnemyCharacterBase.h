@@ -57,6 +57,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, meta = (ClampMin = "0.0", UIMin = "0.0", Category = "Enemy|Combat"))
 	float KnockbackForce = 500.0f; 
 
+	// The amount of health this enemy removes when it damages the player.
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, meta = (ClampMin = "0", UIMin = "0", Category = "Enemy|Combat"))
+	int32 ContactDamage = 10;
+
 	// The speed multiplier applied when the player enters the attack volume of the enemy
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (ClampMin = "0.0", UIMin = "0.0", Category = "Enemy|Combat"))
 	float AttackSpeedMultiplier = 4.0f;

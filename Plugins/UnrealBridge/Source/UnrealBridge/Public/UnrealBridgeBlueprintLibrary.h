@@ -204,6 +204,29 @@ struct FBridgeCallEdge
 	FString TargetKind;
 };
 
+/** Result of WireEnhancedInputActionToFunction (B7). */
+USTRUCT(BlueprintType)
+struct FBridgeWireIAResult
+{
+	GENERATED_BODY()
+
+	/** GUID of the K2Node_EnhancedInputAction event node (new or reused). Empty on failure. */
+	UPROPERTY(BlueprintReadOnly, Category = "UnrealBridge|Blueprint")
+	FString EventNodeGuid;
+
+	/** GUID of the K2Node_CallFunction node added for the target function. Empty on failure. */
+	UPROPERTY(BlueprintReadOnly, Category = "UnrealBridge|Blueprint")
+	FString CallNodeGuid;
+
+	/** True iff the trigger-event exec pin → CallFunction's exec_in connection succeeded. */
+	UPROPERTY(BlueprintReadOnly, Category = "UnrealBridge|Blueprint")
+	bool bWired = false;
+
+	/** Diagnostic when bWired=false (e.g. "trigger pin 'Foo' not found", "schema rejected connection"). */
+	UPROPERTY(BlueprintReadOnly, Category = "UnrealBridge|Blueprint")
+	FString FailureReason;
+};
+
 /** A single node in a Blueprint function graph. */
 USTRUCT(BlueprintType)
 struct FBridgeNodeInfo
@@ -2855,6 +2878,119 @@ public:
 	static FString AddNodeByClassName(const FString& BlueprintPath,
 		const FString& GraphName, const FString& NodeClassPath,
 		int32 NodePosX, int32 NodePosY);
+
+	// ─── Enhanced Input authoring ───────────────────────────────────
+
+	/**
+	 * Spawn a UK2Node_EnhancedInputAction event node bound to a specific
+	 * UInputAction asset. The asset reference is set BEFORE AllocateDefaultPins
+	 * so the node ships with its full pin set: 5 exec out pins
+	 * (Triggered/Started/Ongoing/Canceled/Completed) + ActionValue (typed by
+	 * the IA's ValueType) + ElapsedSeconds + TriggeredSeconds + InputAction.
+	 *
+	 * Reuses an existing node bound to the same IA if one already lives on
+	 * the graph (matches UInputActionEventNodeSpawner::FindExistingNode).
+	 *
+	 * The Blueprint must support input events (Pawn/Actor/PlayerController/...)
+	 * and the graph must not be a construction script — caller's
+	 * responsibility; this function does not preflight.
+	 *
+	 * @return GUID of the new (or reused) node, or "" on failure.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "UnrealBridge|Blueprint")
+	static FString AddEnhancedInputActionEventNode(const FString& BlueprintPath,
+		const FString& GraphName, const FString& InputActionPath,
+		int32 NodePosX, int32 NodePosY);
+
+	/**
+	 * Spawn a UK2Node_GetInputActionValue (a pure "Get Input Action Value"
+	 * node — not the event node). Output value pin is typed by the IA's
+	 * ValueType: Boolean → bool, Axis1D → double, Axis2D → Vector2D,
+	 * Axis3D → Vector. Use this when you need the IA's current value
+	 * inside a non-event graph (functions, custom events, etc.) instead
+	 * of routing through the EnhancedInputAction event node.
+	 *
+	 * @return GUID of the new node, or "" on failure.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "UnrealBridge|Blueprint")
+	static FString AddGetInputActionValueNode(const FString& BlueprintPath,
+		const FString& GraphName, const FString& InputActionPath,
+		int32 NodePosX, int32 NodePosY);
+
+	/**
+	 * Composite helper: place a K2Node_EnhancedInputAction event node for
+	 * `InputActionPath` (or reuse an existing one), place a K2Node_CallFunction
+	 * for `TargetFunctionName` on `TargetClassPath` (empty = self/this BP),
+	 * and wire the event's `TriggerEventPin` exec pin to the CallFunction's
+	 * exec_in pin. The C4 Pawn-scaffold inner loop, exposed standalone for
+	 * direct use.
+	 *
+	 * `TriggerEventPin` is one of "Triggered" / "Started" / "Ongoing" /
+	 * "Canceled" / "Completed" — case-sensitive, matches the exec pin name.
+	 *
+	 * Note: UEnhancedInputComponent::BindAction is not BlueprintCallable.
+	 * The K2Node_EnhancedInputAction event node IS the BP equivalent of a
+	 * BindAction call — the BP compiler expands it into BindAction during
+	 * compile via UK2Node_EnhancedInputAction::ExpandNode. So this helper
+	 * does NOT add a literal "BindAction" function call node; it adds the
+	 * event node + a CallFunction for your handler, and wires them.
+	 *
+	 * Returns both GUIDs + a bWired flag. On failure the bWired flag is
+	 * false and FailureReason carries the diagnostic. Either GUID may be
+	 * empty if its node creation failed.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "UnrealBridge|Blueprint")
+	static FBridgeWireIAResult WireEnhancedInputActionToFunction(
+		const FString& BlueprintPath, const FString& GraphName,
+		const FString& InputActionPath, const FString& TriggerEventPin,
+		const FString& TargetClassPath, const FString& TargetFunctionName,
+		int32 EventNodeX, int32 EventNodeY,
+		int32 CallNodeX,  int32 CallNodeY,
+		bool bAutoWireActionValue = true);
+
+	// ─── B2/B3/B4/B5 — Legacy InputAction / InputAxis / InputKey K2Nodes ─
+
+	/** Spawn a UK2Node_InputAction event node bound to a legacy ActionMapping name (FName). */
+	UFUNCTION(BlueprintCallable, Category = "UnrealBridge|Blueprint")
+	static FString AddLegacyInputActionEventNode(const FString& BlueprintPath,
+		const FString& GraphName, const FString& ActionName,
+		int32 NodePosX, int32 NodePosY);
+
+	/** Spawn a UK2Node_InputAxisEvent for a legacy AxisMapping name. */
+	UFUNCTION(BlueprintCallable, Category = "UnrealBridge|Blueprint")
+	static FString AddLegacyInputAxisEventNode(const FString& BlueprintPath,
+		const FString& GraphName, const FString& AxisName,
+		int32 NodePosX, int32 NodePosY);
+
+	/** Spawn a UK2Node_InputKey for a raw FKey (e.g. "SpaceBar"). */
+	UFUNCTION(BlueprintCallable, Category = "UnrealBridge|Blueprint")
+	static FString AddInputKeyEventNode(const FString& BlueprintPath,
+		const FString& GraphName, const FString& KeyName,
+		int32 NodePosX, int32 NodePosY);
+
+	/** Spawn a UK2Node_InputAxisKeyEvent for a raw axis FKey (e.g. "Mouse X"). */
+	UFUNCTION(BlueprintCallable, Category = "UnrealBridge|Blueprint")
+	static FString AddInputAxisKeyEventNode(const FString& BlueprintPath,
+		const FString& GraphName, const FString& AxisKeyName,
+		int32 NodePosX, int32 NodePosY);
+
+	/**
+	 * Build the standard "BeginPlay → AddMappingContext" graph fragment on a
+	 * Pawn's EventGraph: Event ReceiveBeginPlay → Get Player Controller →
+	 * Get Enhanced Input Local Player Subsystem → AddMappingContext(IMC, priority).
+	 * Returns true on success.
+	 *
+	 * Reuses existing BeginPlay if one is already on the graph.
+	 *
+	 * @param BlueprintPath  Pawn-derived BP.
+	 * @param IMCPath        UInputMappingContext asset path.
+	 * @param Priority       AddMappingContext priority.
+	 * @param OriginX/Y      Top-left position of the new chain (the BeginPlay event node).
+	 */
+	UFUNCTION(BlueprintCallable, Category = "UnrealBridge|Blueprint")
+	static bool AddPawnInputBeginPlaySetup(const FString& BlueprintPath,
+		const FString& IMCPath, int32 Priority,
+		int32 OriginX, int32 OriginY);
 
 	// ─── Editor focus-state query (#17) ─────────────────────────────
 

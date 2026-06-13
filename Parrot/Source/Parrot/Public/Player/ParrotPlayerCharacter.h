@@ -65,6 +65,12 @@ public:
 	// Hits this character with a specified force 
 	virtual void HitCharacterWithLaunchForce(const FVector& Force) override; 
 
+	// Applies specific damage to this character.
+	virtual void ApplyDamageToCharacter(int32 DamageAmount) override;
+
+	// Applies specific damage with a specified force.
+	virtual void ApplyDamageWithLaunchForce(int32 DamageAmount, const FVector& Force) override;
+
 	//--- End AParrotCharacterBase overrides 
 
 	// Returns true when the player can make a valid jump off of the overlapped hurt box given the sweep result 
@@ -139,7 +145,7 @@ protected:
 	// Called when the hit invulnerability timer has completed 
 	void StopHitInvulnerability();
 
-	// Adds a fixed amount of hit points to character's current hit points
+	// Adds a fixed amount of health to character's current health.
 	UFUNCTION(BlueprintCallable, Category = "Parrot|Player|Powerups")
 	void AddHitpoints(int32 PointsToAdd); 
 

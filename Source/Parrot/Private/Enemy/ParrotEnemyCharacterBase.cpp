@@ -130,13 +130,13 @@ void AParrotEnemyCharacterBase::HitBeginOverlap(AActor* OverlappedActor, float F
 
 		if (Force <= 0.0f)
 		{
-			Player->HitCharacter(); 
+			Player->ApplyDamageToCharacter(ContactDamage);
 		}
 		else
 		{
 			// Calculate a force based on actor positions and the magnitude passed in 
 			const FVector HitForce = (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal() * Force;
-			Player->HitCharacterWithLaunchForce(HitForce);
+			Player->ApplyDamageWithLaunchForce(ContactDamage, HitForce);
 		} 
 	}
 }

@@ -41,6 +41,7 @@ void AParrotCharacterBase::BeginPlay()
 {
 	// Current hit points should always start at whatever the authored hit points are
 	CurrentHitPoints = HitPoints;
+	CharacterHealthChangedDelegate.Broadcast(CurrentHitPoints, HitPoints);
 
 	Super::BeginPlay();
 }
@@ -52,6 +53,7 @@ void AParrotCharacterBase::KillCharacter()
 		// Regardless of the current hit points, set them to 0 and then 
 		// invoke the death sequence so the expected death events are dispatched
 		CurrentHitPoints = 0;
+		CharacterHealthChangedDelegate.Broadcast(CurrentHitPoints, HitPoints);
 		CharacterDeath();
 	}
 }
@@ -85,19 +87,36 @@ void AParrotCharacterBase::CharacterDeath()
 
 void AParrotCharacterBase::HitCharacter()
 {
+	ApplyDamageToCharacter(DefaultHitDamage);
+}
+
+void AParrotCharacterBase::HitCharacterWithLaunchForce(const FVector& Force)
+{
+	ApplyDamageWithLaunchForce(DefaultHitDamage, Force);
+}
+
+void AParrotCharacterBase::ApplyDamageToCharacter(int32 DamageAmount)
+{
 	// If a hit event is invoked after the character has died, ignore this call
 	if (IsDead())
 	{
 		return;
 	}
 
-	// Subtract from hit points by one but clamp to zero
-	CurrentHitPoints = (CurrentHitPoints > 0) ? CurrentHitPoints - 1 : 0; 
+	const int32 ClampedDamage = FMath::Max(0, DamageAmount);
+	if (ClampedDamage <= 0)
+	{
+		return;
+	}
+
+	// Subtract the supplied damage amount from health but clamp to zero.
+	CurrentHitPoints = FMath::Max(CurrentHitPoints - ClampedDamage, 0);
 
 	// Invoke the BlueprintImplementable Event so the derived blueprint class knows
 	OnCharacterHit();
 	// Broadcast the delegate so any subscribed classes or blueprints know
 	CharacterHitDelegate.Broadcast();
+	CharacterHealthChangedDelegate.Broadcast(CurrentHitPoints, HitPoints);
 
 	// Check if the character has died.
 	if (IsDead())
@@ -107,7 +126,7 @@ void AParrotCharacterBase::HitCharacter()
 	}
 }
 
-void AParrotCharacterBase::HitCharacterWithLaunchForce(const FVector& Force)
+void AParrotCharacterBase::ApplyDamageWithLaunchForce(int32 DamageAmount, const FVector& Force)
 {
 	// If a hit event is invoked after the character has died, ignore this call
 	if (IsDead())
@@ -125,5 +144,27 @@ void AParrotCharacterBase::HitCharacterWithLaunchForce(const FVector& Force)
 	LaunchCharacter(LaunchVelocity, true, true); // XY Override, Z Override
 
 	// Apply regular hit logic
-	HitCharacter(); 
+	ApplyDamageToCharacter(DamageAmount);
+}
+
+void AParrotCharacterBase::HealCharacter(int32 HealAmount)
+{
+	if (IsDead())
+	{
+		return;
+	}
+
+	const int32 ClampedHeal = FMath::Max(0, HealAmount);
+	if (ClampedHeal <= 0)
+	{
+		return;
+	}
+
+	const int32 OldHitPoints = CurrentHitPoints;
+	CurrentHitPoints = FMath::Clamp(CurrentHitPoints + ClampedHeal, 0, HitPoints);
+
+	if (CurrentHitPoints != OldHitPoints)
+	{
+		CharacterHealthChangedDelegate.Broadcast(CurrentHitPoints, HitPoints);
+	}
 }
