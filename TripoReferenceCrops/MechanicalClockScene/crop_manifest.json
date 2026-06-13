@@ -1,0 +1,182 @@
+[
+  {
+    "name": "00_full_scene_reference",
+    "box": [
+      0,
+      0,
+      1916,
+      821
+    ],
+    "raw": "00_full_scene_reference_raw.png",
+    "square_1024": "00_full_scene_reference_1024.png",
+    "note": "overall composition and color reference"
+  },
+  {
+    "name": "01_main_clock_machine",
+    "box": [
+      1110,
+      60,
+      1605,
+      690
+    ],
+    "raw": "01_main_clock_machine_raw.png",
+    "square_1024": "01_main_clock_machine_1024.png",
+    "note": "main red clock machine with dome, dial, base"
+  },
+  {
+    "name": "02_small_alarm_clock",
+    "box": [
+      1075,
+      510,
+      1325,
+      720
+    ],
+    "raw": "02_small_alarm_clock_raw.png",
+    "square_1024": "02_small_alarm_clock_1024.png",
+    "note": "small alarm-clock companion and hose"
+  },
+  {
+    "name": "03_long_ground_platform",
+    "box": [
+      0,
+      585,
+      1916,
+      755
+    ],
+    "raw": "03_long_ground_platform_raw.png",
+    "square_1024": "03_long_ground_platform_1024.png",
+    "note": "long green/yellow main floor platform module"
+  },
+  {
+    "name": "04_single_floating_platform",
+    "box": [
+      720,
+      330,
+      1010,
+      500
+    ],
+    "raw": "04_single_floating_platform_raw.png",
+    "square_1024": "04_single_floating_platform_1024.png",
+    "note": "representative floating green platform"
+  },
+  {
+    "name": "05_lower_left_floating_platform",
+    "box": [
+      350,
+      460,
+      560,
+      610
+    ],
+    "raw": "05_lower_left_floating_platform_raw.png",
+    "square_1024": "05_lower_left_floating_platform_1024.png",
+    "note": "lower platform with clearer side bolts"
+  },
+  {
+    "name": "06_left_pillar_module",
+    "box": [
+      0,
+      40,
+      310,
+      720
+    ],
+    "raw": "06_left_pillar_module_raw.png",
+    "square_1024": "06_left_pillar_module_1024.png",
+    "note": "left colorful column, base, tank, valves"
+  },
+  {
+    "name": "07_right_pillar_module",
+    "box": [
+      1605,
+      35,
+      1916,
+      725
+    ],
+    "raw": "07_right_pillar_module_raw.png",
+    "square_1024": "07_right_pillar_module_1024.png",
+    "note": "right colorful column, base, tank, valves"
+  },
+  {
+    "name": "08_ceiling_rail_and_slider",
+    "box": [
+      520,
+      0,
+      1660,
+      180
+    ],
+    "raw": "08_ceiling_rail_and_slider_raw.png",
+    "square_1024": "08_ceiling_rail_and_slider_1024.png",
+    "note": "top blue rail and yellow slider mounts"
+  },
+  {
+    "name": "09_left_hanging_claw",
+    "box": [
+      285,
+      65,
+      545,
+      390
+    ],
+    "raw": "09_left_hanging_claw_raw.png",
+    "square_1024": "09_left_hanging_claw_1024.png",
+    "note": "left hanging crescent claw assembly"
+  },
+  {
+    "name": "10_center_hanging_claw",
+    "box": [
+      930,
+      0,
+      1245,
+      235
+    ],
+    "raw": "10_center_hanging_claw_raw.png",
+    "square_1024": "10_center_hanging_claw_1024.png",
+    "note": "center hanging crescent claw assembly"
+  },
+  {
+    "name": "11_star_spiked_hanger",
+    "box": [
+      665,
+      120,
+      910,
+      340
+    ],
+    "raw": "11_star_spiked_hanger_raw.png",
+    "square_1024": "11_star_spiked_hanger_1024.png",
+    "note": "spiked hanging gear/star ornament"
+  },
+  {
+    "name": "12_side_pipe_valve_detail",
+    "box": [
+      55,
+      330,
+      250,
+      650
+    ],
+    "raw": "12_side_pipe_valve_detail_raw.png",
+    "square_1024": "12_side_pipe_valve_detail_1024.png",
+    "note": "side pipe valve detail kit"
+  },
+  {
+    "name": "13_background_gauge_pipes",
+    "box": [
+      745,
+      455,
+      1015,
+      620
+    ],
+    "raw": "13_background_gauge_pipes_raw.png",
+    "square_1024": "13_background_gauge_pipes_1024.png",
+    "note": "background gauge and pipe silhouette reference"
+  },
+  {
+    "name": "14_floor_tile_strip",
+    "box": [
+      0,
+      710,
+      1916,
+      821
+    ],
+    "raw": "14_floor_tile_strip_raw.png",
+    "square_1024": "14_floor_tile_strip_1024.png",
+    "note": "foreground stone floor tile strip"
+  }
+]

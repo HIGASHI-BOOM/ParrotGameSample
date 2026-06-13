@@ -1,0 +1,74 @@
+[
+  {
+    "name": "00_full_platform_white",
+    "box": [
+      18,
+      32,
+      254,
+      135
+    ],
+    "raw": "00_full_platform_white_raw.png",
+    "square_1024": "00_full_platform_white_1024.png",
+    "note": "complete platform, reference only, not the modular building unit"
+  },
+  {
+    "name": "01_endpoint_left_white",
+    "box": [
+      18,
+      32,
+      88,
+      135
+    ],
+    "raw": "01_endpoint_left_white_raw.png",
+    "square_1024": "01_endpoint_left_white_1024.png",
+    "note": "left endpoint block with rounded cap and open right edge"
+  },
+  {
+    "name": "02_endpoint_right_white",
+    "box": [
+      184,
+      32,
+      254,
+      135
+    ],
+    "raw": "02_endpoint_right_white_raw.png",
+    "square_1024": "02_endpoint_right_white_1024.png",
+    "note": "right endpoint block with open left edge"
+  },
+  {
+    "name": "03_endpoint_left_mirrored_for_right_white",
+    "box": [
+      18,
+      32,
+      88,
+      135
+    ],
+    "raw": "03_endpoint_left_mirrored_for_right_white_raw.png",
+    "square_1024": "03_endpoint_left_mirrored_for_right_white_1024.png",
+    "note": "mirrored left endpoint, useful as a single reusable endpoint asset"
+  },
+  {
+    "name": "04_middle_link_block_white",
+    "box": [
+      82,
+      32,
+      186,
+      135
+    ],
+    "raw": "04_middle_link_block_white_raw.png",
+    "square_1024": "04_middle_link_block_white_1024.png",
+    "note": "repeatable middle connector block; use this for variable-length procedural assembly"
+  },
+  {
+    "name": "05_middle_single_panel_white",
+    "box": [
+      91,
+      36,
+      150,
+      131
+    ],
+    "raw": "05_middle_single_panel_white_raw.png",
+    "square_1024": "05_middle_single_panel_white_1024.png",
+    "note": "smaller single green panel motif, useful as a detail/tile reference"
+  }
+]

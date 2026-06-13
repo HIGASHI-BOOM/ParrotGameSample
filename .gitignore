@@ -1,0 +1,29 @@
+# Unreal Engine generated files
+Binaries/
+**/Binaries/
+Intermediate/
+**/Intermediate/
+DerivedDataCache/
+**/DerivedDataCache/
+Saved/
+**/Saved/
+
+# IDE and local user state
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build logs and temp files
+*.log
+*.tmp
+*.temp
+__pycache__/
+*.pyc
+
+# OS metadata
+Thumbs.db
+Desktop.ini
